@@ -30,6 +30,19 @@ class ReservationService {
             throw error;
         }
     }
+
+    async deleteReservation(id) {
+        try {
+            const objectId = new Types.ObjectId(id);
+            const reservation = await this.reservationRepository.deleteById(objectId);
+            if (!reservation) {
+                throw new Error('reservation not found');
+            }
+            return reservation;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export default ReservationService;

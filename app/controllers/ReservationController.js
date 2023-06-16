@@ -26,6 +26,19 @@ class ReservationController {
         }
     }
 
+    
+    async deleteReservation(request, response) {
+        const reservationId = request.params.id;
+
+        try {
+            const reservation = await this.reservationService.deleteReservation(reservationId);
+            response.status(200).json(reservation);
+        } catch (error) {
+            console.error(error);
+            response.status(500).json({ error: error.message });
+        }
+    }
+
     async getReservationSessions(request, response) {
         const reservationId = request.params.id;
 

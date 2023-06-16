@@ -17,6 +17,7 @@ async function main() {
 
 app.get('/reservations', authMiddleware, reservationController.getReservations.bind(reservationController));
 app.get('/reservations/:id', reservationController.getReservation.bind(reservationController));
+app.delete('/reservations/:id', authMiddleware, reservationController.deleteReservation.bind(reservationController));
 app.get('/reservations/:id/sessions', reservationController.getReservationSessions.bind(reservationController));
 
 app.get('/seances', seanceController.getSeances.bind(seanceController));

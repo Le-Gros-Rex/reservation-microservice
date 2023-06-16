@@ -8,6 +8,10 @@ class ReservationRepository {
     async findById(reservationId) {
         return ReservationEntity.findById(reservationId);
     }
+
+    async deleteById(reservationId) {
+        return ReservationEntity.deleteOne(reservationId);
+    }
 }
 
 export default ReservationRepository;

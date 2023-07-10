@@ -1,8 +1,10 @@
 import axios from 'axios';
 import SeanceService from '../services/SeanceService.js';
+import ReservationService from '../services/ReservationService.js';
 class seanceController {
     constructor() {
         this.seanceService = new SeanceService();
+        this.reservationService = new ReservationService();
     }
     async getSeances(request, response) {
         try {
@@ -38,17 +40,51 @@ class seanceController {
         }
     }
 
-    async getSeanceSessions(request, response) {
-        const seanceId = request.params.id;
+    async createSeanceReservation(request, response) {
+        const reservationBody = request.body;
 
         try {
-            const seance = await this.seanceService.getseance(seanceId);
+            const seance = await this.seanceService.getSeance(reservationBody.seanceId);
+            if (!seance) throw new Error('Seance not found');
 
-            // replace with good api
-            const sessionsResponse = await axios.get(`https://random-data-api.com/api/v2/addresses?size=10`);
-            const sessions = sessionsResponse.data;
+            if (!reservationBody || !reservationBody.seanceId || !reservationBody.placeId || !reservationBody.type) throw new Error('Reservation body is missing');
 
-            response.status(200).json(sessions);
+            const reservation = await this.reservationService.createReservation({
+                idPlace: reservationBody.placeId,
+                idSeance: reservationBody.seanceId,
+                type: reservationBody.type,
+                idPaiement: null
+            });
+
+
+            const paymentResponse = await axios.post(`${process.env.PAYMENT_URL}/payments`,
+                {
+                    reservationId: reservation._id,
+                    amount: 5
+                },
+                {
+                    headers: {
+                        Authorization: request.headers.authorization
+                    }
+                }
+            );
+
+            const payment = paymentResponse.data;
+
+            await this.reservationService.updateReservation(reservation._id, {
+                idPlace: reservationBody.placeId,
+                idSeance: reservationBody.seanceId,
+                type: reservationBody.type,
+                idPaiement: payment._id
+            });
+
+            const reservationUpdated = await this.reservationService.getReservation(reservation._id);
+
+
+            response.status(200).json({
+                reservation: reservationUpdated,
+                payment: payment
+            });
         } catch (error) {
             console.error(error);
             response.status(500).json({ error: error.message });

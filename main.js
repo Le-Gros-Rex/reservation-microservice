@@ -7,6 +7,7 @@ import authMiddleware from './app/middleware/authMiddleware.js';
 
 dotenv.config();
 const app = express();
+app.use(express.json());
 const reservationController = new ReservationController();
 const seanceController = new SeanceController();
 
@@ -18,14 +19,14 @@ async function main() {
 app.get('/reservations', authMiddleware, reservationController.getReservations.bind(reservationController));
 app.get('/reservations/:id', reservationController.getReservation.bind(reservationController));
 app.delete('/reservations/:id', authMiddleware, reservationController.deleteReservation.bind(reservationController));
-app.get('/reservations/:id/sessions', reservationController.getReservationSessions.bind(reservationController));
+app.post('/reservation', seanceController.createSeanceReservation.bind(seanceController));
 
 app.get('/seances', seanceController.getSeances.bind(seanceController));
 app.get('/seances/:id', seanceController.getSeance.bind(seanceController));
 app.get('/seancesFilm/:id', seanceController.getSeancesFilm.bind(seanceController));
-app.get('/seances/:id/sessions', seanceController.getSeanceSessions.bind(seanceController));
+
 
 app.listen(3005, () => {
   main().catch(err => console.log(err));
-  console.log('Server running');
+  console.log('Server running 3005');
 });

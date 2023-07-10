@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import ReservationEntity from './ReservationEntity.js';
 
 class ReservationRepository {
@@ -11,6 +12,19 @@ class ReservationRepository {
 
     async deleteById(reservationId) {
         return ReservationEntity.deleteOne(reservationId);
+    }
+
+    async create(reservation) {
+        return ReservationEntity.create({
+            _id: new Types.ObjectId(),
+            ...reservation
+        });
+    }
+
+    async updateOne(reservationId, reservation) {
+        return ReservationEntity.updateOne({
+            _id: reservationId
+        }, reservation);
     }
 }
 

@@ -43,6 +43,29 @@ class ReservationService {
             throw error;
         }
     }
+
+    async createReservation(reservation) {
+        try {
+            const reservationCreated = await this.reservationRepository.create(reservation);
+            return reservationCreated;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updateReservation(id, reservation) {
+        try {
+            const objectId = new Types.ObjectId(id);
+            const reservationUpdated = await this.reservationRepository.updateOne(objectId, reservation);
+            if (!reservationUpdated) {
+                throw new Error('reservation not found');
+            }
+            return reservationUpdated;
+        } catch (error) {
+            throw error;
+        }
+
+    }
 }
 
 export default ReservationService;
